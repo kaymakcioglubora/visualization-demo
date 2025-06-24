@@ -29,7 +29,7 @@ app.layout = html.Div(
     Output('live-graph', 'figure'),
     Input('interval', 'n_intervals')
 )
-def update_graph():
+def update_graph(n):
     global df
 
     new_time = pd.Timestamp.now().strftime("%H:%M:%S")
