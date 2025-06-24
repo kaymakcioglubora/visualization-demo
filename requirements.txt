@@ -1,0 +1,8 @@
+pydantic==2.11.7
+pydantic-settings==2.10.1
+influxdb-client==1.49.0
+dash==3.0.4
+pandas==2.3.0
+numpy==2.3.1
+streamlit==1.46.0
+plotly==6.1.2
