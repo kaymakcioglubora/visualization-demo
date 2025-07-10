@@ -8,7 +8,10 @@ from config.app_settings import ApplicationSettings
 import config.db_config as db
 import config.log_config as log
 import plotly.express as px
+from codecarbon import OfflineEmissionsTracker
 
+tracker = OfflineEmissionsTracker(country_iso_code="TUR", project_name="Plotting", measure_power_secs=10)
+tracker.start_task("init_streamlit")
 
 parser = argparse.ArgumentParser()
 
@@ -39,8 +42,11 @@ table_placeholder = st.empty()
 
 df = pd.DataFrame(columns=["Time", "Value"])
 
-for _ in range(100):
-    new_time = pd.Timestamp.now().strftime("%H:%M:%S")
+init_emissions = tracker.stop_task()
+tracker.start_task("plot_values")
+
+for i in range(100):
+    new_time = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
     new_value = np.random.randn() * 10 + 50
     new_row = pd.DataFrame({"Time": [new_time], "Value": [new_value]})
     df = pd.concat([df, new_row], ignore_index=True)
@@ -54,4 +60,10 @@ for _ in range(100):
 
     table_placeholder.dataframe(df)
 
-    time.sleep(1)
+    time.sleep(0.1)
+
+plot_emissions = tracker.stop_task()
+tracker.stop()
+
+print(f"\nCarbon emissions from computation: {tracker.final_emissions * 1000:.4f} g CO2eq")
+print("\nDetailed emissions data:", tracker.final_emissions_data)
